@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 use std::env;
 use jfs::Store;
+use nanoid::nanoid;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Task {
@@ -60,6 +61,12 @@ fn get_name_from_args(args: &Vec<String>) -> String {
 
 fn add(db: Store, name: String) {
     let new_task = Task { name, completed: false };
-    let id = db.save(&new_task).unwrap();
-    println!("Added new task {id}.");
+
+    let alphabet: [char; 16] = [
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f'
+    ];
+
+    let id = nanoid!(6, &alphabet);
+    let created = db.save_with_id(&new_task, &id).unwrap();
+    println!("Added new task {created}.");
 }
