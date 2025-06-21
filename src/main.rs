@@ -33,6 +33,7 @@ fn main() {
         "show" => show(&db),
         "add" => add(db, get_name_from_args(&args)),
         "complete" => complete(db, args[2].clone()),
+        "delete" => delete(db, args[2].clone()),
         _ => println!("That is not a valid command.")
     }
 }
@@ -92,4 +93,9 @@ fn complete(db: Store, id: String) {
     } else {
         println!("{id} is already complete.");
     }
+}
+
+fn delete(db: Store, id: String) {
+    db.delete(&id).unwrap();
+    println!("Deleted task {id}.");
 }
