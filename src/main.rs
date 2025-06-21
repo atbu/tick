@@ -11,15 +11,6 @@ struct Task {
 }
 
 fn main() {
-    let test_task = r#"
-        {
-            "name": "Test Task",
-            "completed": false
-        }
-    "#;
-
-    let task: Task = serde_json::from_str(test_task).unwrap();
-
     let args: Vec<String> = env::args().collect();
 
     if args.len() == 1 {
@@ -33,13 +24,12 @@ fn main() {
 
     match command.as_str() {
         "ping" => println!("pong"),
-        "test" => println!("{:?}", task),
-        "show" => println!("{:?}", show().unwrap()),
+        "show" => println!("{:?}", get_tasks_from_file().unwrap()),
         _ => println!("That is not a valid command.")
     }
 }
 
-fn show() -> Result<Vec<Task>, Box<dyn Error>> {
+fn get_tasks_from_file() -> Result<Vec<Task>, Box<dyn Error>> {
     let file = File::open("tick.json")?;
     let reader = BufReader::new(file);
 
