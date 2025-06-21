@@ -1,9 +1,7 @@
+use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 use std::env;
-use std::error::Error;
-use std::fs::File;
-use std::io::{BufReader, Write};
-use std::path::Path;
+use jfs::Store;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Task {
@@ -12,12 +10,10 @@ struct Task {
 }
 
 fn main() {
-    if !Path::new("tick.json").exists() {
-        let empty = r#"[]"#;
+    let mut cfg = jfs::Config::default();
+    cfg.single = true;
 
-        let mut file = File::create("tick.json").unwrap();
-        file.write_all(empty.as_bytes()).unwrap();
-    }
+    let db = Store::new_with_cfg("data", cfg).unwrap();
 
     let args: Vec<String> = env::args().collect();
 
@@ -32,13 +28,14 @@ fn main() {
 
     match command.as_str() {
         "ping" => println!("pong"),
-        "show" => show(),
+        "show" => show(&db),
+        "add" => add(db, get_name_from_args(&args)),
         _ => println!("That is not a valid command.")
     }
 }
 
-fn show() {
-    let tasks: Vec<Task> = get_tasks_from_file().unwrap();
+fn show(db: &Store) {
+    let tasks: BTreeMap<String, Task> = db.all().unwrap();
     if tasks.len() == 0 {
         println!("No tasks found.");
     } else {
@@ -46,11 +43,23 @@ fn show() {
     }
 }
 
-fn get_tasks_from_file() -> Result<Vec<Task>, Box<dyn Error>> {
-    let file = File::open("tick.json")?;
-    let reader = BufReader::new(file);
+fn get_name_from_args(args: &Vec<String>) -> String {
+    let mut name = String::new();
 
-    let tasks: Vec<Task> = serde_json::from_reader(reader)?;
+    if args.len() == 2 {
+        println!("Please enter a name for the new task.");
+        std::process::exit(0);
+    }
 
-    Ok(tasks)
+    for i in 2..args.len() {
+        name.push_str(format!("{} ", &args[i]).as_ref());
+    }
+
+    name.trim().to_string()
+}
+
+fn add(db: Store, name: String) {
+    let new_task = Task { name, completed: false };
+    let id = db.save(&new_task).unwrap();
+    println!("Added new task {id}.");
 }
