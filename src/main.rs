@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 use std::env;
 use jfs::Store;
 use nanoid::nanoid;
+use colored::Colorize;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Task {
@@ -41,7 +42,17 @@ fn show(db: &Store) {
     if tasks.len() == 0 {
         println!("No tasks found.");
     } else {
-        println!("{:?}", tasks);
+        for task in tasks.iter() {
+            println!("{} {}: {}", completed_symbol(&task), &task.0, &task.1.name);
+        }
+    }
+}
+
+fn completed_symbol(task: &(&String, &Task)) -> colored::ColoredString {
+    if task.1.completed {
+        "✓".green()
+    } else {
+        "x".red()
     }
 }
 
@@ -77,6 +88,8 @@ fn complete(db: Store, id: String) {
     if !task.completed {
         task.completed = true;
         db.save_with_id(&task, &id).unwrap();
+        println!("Completed task {id}.");
+    } else {
+        println!("{id} is already complete.");
     }
-    println!("Completed task {id}.");
 }
