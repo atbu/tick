@@ -29,7 +29,6 @@ fn main() {
     let command: &String = &args[1];
 
     match command.as_str() {
-        "ping" => println!("pong"),
         "show" => show(&db),
         "add" => add(db, get_name_from_args(&args)),
         "complete" => complete(db, args[2].clone()),
