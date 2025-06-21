@@ -31,6 +31,7 @@ fn main() {
         "ping" => println!("pong"),
         "show" => show(&db),
         "add" => add(db, get_name_from_args(&args)),
+        "complete" => complete(db, args[2].clone()),
         _ => println!("That is not a valid command.")
     }
 }
@@ -69,4 +70,13 @@ fn add(db: Store, name: String) {
     let id = nanoid!(6, &alphabet);
     let created = db.save_with_id(&new_task, &id).unwrap();
     println!("Added new task {created}.");
+}
+
+fn complete(db: Store, id: String) {
+    let mut task: Task = db.get(&id).unwrap();
+    if !task.completed {
+        task.completed = true;
+        db.save_with_id(&task, &id).unwrap();
+    }
+    println!("Completed task {id}.");
 }
