@@ -1,5 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::error::Error;
+use std::fs::File;
+use std::io::BufReader;
 
 #[derive(Debug, Deserialize, Serialize)]
 struct Task {
@@ -31,6 +34,16 @@ fn main() {
     match command.as_str() {
         "ping" => println!("pong"),
         "test" => println!("{:?}", task),
+        "show" => println!("{:?}", show().unwrap()),
         _ => println!("That is not a valid command.")
     }
+}
+
+fn show() -> Result<Vec<Task>, Box<dyn Error>> {
+    let file = File::open("tick.json")?;
+    let reader = BufReader::new(file);
+
+    let tasks: Vec<Task> = serde_json::from_reader(reader)?;
+
+    Ok(tasks)
 }
