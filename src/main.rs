@@ -33,7 +33,7 @@ fn main() {
         "add" => add(db, get_name_from_args(&args)),
         "complete" => complete(db, args[2].clone()),
         "delete" => delete(db, args[2].clone()),
-        _ => println!("That is not a valid command.")
+        _ => println!("{command} is not a valid command.")
     }
 }
 
