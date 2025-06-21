@@ -6,7 +6,8 @@ fn main() {
     // First argument should be disregarded - this is the path to the binary.
     // So take second argument as the command the user has chosen.
     let command: &String = &args[1];
-
-    dbg!(&args);
-    dbg!(&command);
+    
+    if command == "ping" {
+        println!("pong");
+    }
 }
