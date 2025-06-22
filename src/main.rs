@@ -33,6 +33,7 @@ fn main() {
         "add" => add(db, get_name_from_args(&args)),
         "complete" => complete(db, args[2].clone()),
         "delete" => delete(db, args[2].clone()),
+        "help" => help(),
         _ => println!("{command} is not a valid command.")
     }
 }
@@ -97,4 +98,19 @@ fn complete(db: Store, id: String) {
 fn delete(db: Store, id: String) {
     db.delete(&id).unwrap();
     println!("Deleted task {id}.");
+}
+
+fn help() {
+    println!("{}", "Help:".bold());
+
+    let help_commands = [
+        ("show", "Show all tasks."),
+        ("add <name...>", "Add a new task."),
+        ("complete <id>", "Complete a task."),
+        ("delete <id>", "Delete a task.")
+    ];
+
+    for command in help_commands.iter() {
+        println!("{} - {}", command.0, command.1.italic());
+    }
 }
