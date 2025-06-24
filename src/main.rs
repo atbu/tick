@@ -33,8 +33,7 @@ fn main() {
         "add" => add(db, get_name_from_args(&args)),
         "complete" => complete(db, args[2].clone()),
         "delete" => delete(db, args[2].clone()),
-        "help" => help(),
-        _ => println!("{command} is not a valid command.")
+        _ => help(args[1].clone())
     }
 }
 
@@ -100,14 +99,19 @@ fn delete(db: Store, id: String) {
     println!("Deleted task {id}.");
 }
 
-fn help() {
+fn help(command_entered: String) {
+    if command_entered != "help" {
+        println!("'{command_entered}' isn't a valid command.");
+    }
+    
     println!("{}", "Help:".bold());
 
     let help_commands = [
         ("show", "Show all tasks."),
         ("add <name...>", "Add a new task."),
         ("complete <id>", "Complete a task."),
-        ("delete <id>", "Delete a task.")
+        ("delete <id>", "Delete a task."),
+        ("help", "Show this list of commands.")
     ];
 
     for command in help_commands.iter() {
